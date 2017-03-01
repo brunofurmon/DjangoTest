@@ -4,10 +4,14 @@ from perfis.models import Perfil, Convite
 from django.shortcuts import redirect
 
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.decorators import permission_required
 
 @login_required
 def index(request):
+	print request.user.username #novo
+	print request.user.email #novo
+	print request.user.has_perm('perfis.add_convite') #novo
+
 	return render(request, 'index.html', { 'perfis' : Perfil.objects.all(), 
 		'perfil_logado' : get_perfil_logado(request)})
 
@@ -20,6 +24,7 @@ def exibir(request, perfil_id):
 	return render(request, 'perfil.html', {'perfil' : perfil, 'perfil_logado' : get_perfil_logado(request), 
 		'ja_eh_contato' : ja_eh_contato})
 
+@permission_required('perfis.add_convite', raise_exception=False)
 @login_required
 def convidar(request, perfil_id):
 	perfil_a_convidar = Perfil.objects.get(id=perfil_id)
